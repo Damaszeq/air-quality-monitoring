@@ -5,7 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "C:\\Users\\tomne\\air-quality-monitoring\\src",
-                "C:\\Users\\tomne\\air-quality-monitoring\\include"
+                "C:\\Users\\tomne\\air-quality-monitoring\\include",
+                "C:/Users/tomne/air-quality-monitoring"
             ],
             "compilerPath": "gcc",
             "cStandard": "${default}",
