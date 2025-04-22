@@ -1,24 +1,34 @@
 #include <iostream>
 #include <vector>
 #include "include\Station.h"
+#include "include\ApiClient.h"
 
 using namespace std;
 
 int main() {
-    // Przykład użycia
-    vector<int> sensors = {1, 2, 3};
-    Station station(1, "Stacja 1", "Warszawa", 52.2298, 21.0118);
-    station.displayInfo();
+    // Bazowy URL API
+    std::string base_url = "https://powietrze.gios.gov.pl/pjp/api";
+    ApiClient apiClient(base_url);
 
-    if (station.hasSensor(2)) {
-        cout << "Stacja ma czujnik 2." << endl;
+    try {
+        // Pobranie listy stacji
+        auto stations = apiClient.getStations();
+        std::cout << "Stacje: " << std::endl;
+        for (const auto& station : stations) {
+            std::cout << "ID: " << station["id"] << ", Nazwa: " << station["stationName"] << std::endl;
+        }
+
+        // Pobranie danych o pomiarach dla konkretnej stacji (przykład dla ID = 1)
+        std::string stationId = "1";
+        auto measurements = apiClient.getMeasurements(stationId);
+        std::cout << "Pomiar dla stacji " << stationId << ": " << measurements.dump(4) << std::endl;
+
+    } catch (const std::exception& e) {
+        std::cerr << "Błąd: " << e.what() << std::endl;
     }
+
     return 0;
 }
-
-
-
-
 
 
 
