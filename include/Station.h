@@ -2,17 +2,22 @@
 #define STATION_H
 
 #include <string>
+#include <vector>
 
 using namespace std;
 
 class Station
 {
 private:
-    int id;
-    string name;
-    string city;
-    double latitude;
-    double longitude;
+int id;
+string name;
+double latitude;
+double longitude;
+string city;
+string commune;
+string district;
+string province;
+vector<int> sensorIds;
 
 public:
     // Konstruktor
@@ -31,6 +36,10 @@ public:
     void setCity(const string& newCity);
     void setLatitude(double newLatitude);
     void setLongitude(double newLongitude);
+
+    //Metody
+    void displayInfo() const;
+    bool hasSensor(int sensorId) const;
 };
 
 #endif // STATION_H
