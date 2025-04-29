@@ -114,6 +114,27 @@
     "xloctime": "cpp",
     "xmemory": "cpp",
     "xtr1common": "cpp",
-    "xutility": "cpp"
+    "xutility": "cpp",
+    "array": "cpp",
+    "string_view": "cpp",
+    "ranges": "cpp",
+    "span": "cpp",
+    "variant": "cpp",
+    "codecvt": "cpp",
+    "cstdarg": "cpp",
+    "cwctype": "cpp",
+    "deque": "cpp",
+    "forward_list": "cpp",
+    "map": "cpp",
+    "memory_resource": "cpp",
+    "numeric": "cpp",
+    "random": "cpp",
+    "ratio": "cpp",
+    "iomanip": "cpp",
+    "numbers": "cpp",
+    "sstream": "cpp",
+    "text_encoding": "cpp",
+    "cinttypes": "cpp",
+    "valarray": "cpp"
   }
 }
