@@ -1,8 +1,13 @@
-#include "Station.h"
+
+#include "StationManager.h"
+#include <curl/curl.h>
+#include <nlohmann/json.hpp>
+#include <cmath>
 #include <iostream>
+#include <sstream>
+#include <stdexcept>
 
 using namespace std;
-
 Station::Station(int id, const string& name, const string& city, double latitude, double longitude)
     : id(id), name(name), city(city), latitude(latitude), longitude(longitude) {}
 

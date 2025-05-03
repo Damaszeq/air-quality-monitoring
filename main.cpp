@@ -1,37 +1,38 @@
+// main.cpp
+#include "StationManager.h"
 #include <iostream>
 #include <vector>
-#include "include\Station.h"
-#include "include\ApiClient.h"
+#include <locale>
+#include <clocale>   // dla std::setlocale
 
-using namespace std;
+
 
 int main() {
-    // Bazowy URL API
-    std::string base_url = "https://powietrze.gios.gov.pl/pjp/api";
-    ApiClient apiClient(base_url);
+ 
 
-    try {
-        // Pobranie listy stacji
-        auto stations = apiClient.getStations();
-        std::cout << "Stacje: " << std::endl;
-        for (const auto& station : stations) {
-            std::cout << "ID: " << station["id"] << ", Nazwa: " << station["stationName"] << std::endl;
-        }
-
-        // Pobranie danych o pomiarach dla konkretnej stacji (przykład dla ID = 1)
-        std::string stationId = "1";
-        auto measurements = apiClient.getMeasurements(stationId);
-        std::cout << "Pomiar dla stacji " << stationId << ": " << measurements.dump(4) << std::endl;
-
-    } catch (const std::exception& e) {
-        std::cerr << "Błąd: " << e.what() << std::endl;
+    // Ustaw polską locale UTF-8 dla MSYS2
+     // Ustaw locale C (MSYS2)
+     if (std::setlocale(LC_ALL, "pl_PL.UTF-8") == nullptr) {
+        std::cerr << "Błąd ustawiania locale!" << std::endl;
     }
+
+    std::vector<Station> stations;
+    std::string cityFilter = "Warszawa";  // Możesz podać dowolne miasto lub pusty ciąg, by nie filtrować
+    loadStations(stations, cityFilter);
+    
+    for (const auto& station : stations) {
+        std::cout << "ID stacji: " << station.getId() << std::endl
+                  << "Stacja: " << station.getName() 
+                  << ", Miasto: " << station.getCity() 
+                  << ", Szerokość geograficzna: " << station.getLatitude()
+                  << ", Długość geograficzna: " << station.getLongitude() << std::endl;
+    }
+
+
+    // Zatrzymanie programu przed zamknięciem
+    std::cout << "Naciśnij Enter, aby zakończyć program..." << std::endl;
+    std::cin.get();  // Czeka na naciśnięcie klawisza Enter przed zamknięciem
 
     return 0;
 }
-
-
-
-
-
 

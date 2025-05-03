@@ -9,6 +9,7 @@
 class ApiClient {
 public:
     ApiClient(const std::string& base_url);
+    ApiClient();
     ~ApiClient();
 
     // Funkcja do pobierania danych o stacjach

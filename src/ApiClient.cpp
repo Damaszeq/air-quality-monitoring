@@ -5,6 +5,8 @@
 
 ApiClient::ApiClient(const std::string& base_url) : base_url(base_url) {}
 
+ApiClient::ApiClient() : base_url("https://api.gios.gov.pl/pjp-api/rest") {}
+
 ApiClient::~ApiClient() {}
 
 size_t writeCallback(void* contents, size_t size, size_t nmemb, void* userp) {
