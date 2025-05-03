@@ -1,38 +1,42 @@
 // main.cpp
-#include "StationManager.h"
+
 #include <iostream>
 #include <vector>
+#include "include/StationManager.h"
+#include "ApiClient.h"
 #include <locale>
 #include <clocale>   // dla std::setlocale
 
 
-
 int main() {
- 
-
-    // Ustaw polską locale UTF-8 dla MSYS2
-     // Ustaw locale C (MSYS2)
-     if (std::setlocale(LC_ALL, "pl_PL.UTF-8") == nullptr) {
-        std::cerr << "Błąd ustawiania locale!" << std::endl;
-    }
-
-    std::vector<Station> stations;
-    std::string cityFilter = "Warszawa";  // Możesz podać dowolne miasto lub pusty ciąg, by nie filtrować
-    loadStations(stations, cityFilter);
+    StationManager stationManager;
     
+    // Tworzymy wektor do przechowywania stacji
+    std::vector<Station> stations;
+
+    // Filtrowanie stacji po mieście "Warszawa"
+    stationManager.loadStations(stations, "Warszawa");
+
+    // Wypisujemy stacje z Warszawy
+    std::cout << "Lista stacji w Warszawie:" << std::endl;
     for (const auto& station : stations) {
-        std::cout << "ID stacji: " << station.getId() << std::endl
-                  << "Stacja: " << station.getName() 
-                  << ", Miasto: " << station.getCity() 
-                  << ", Szerokość geograficzna: " << station.getLatitude()
-                  << ", Długość geograficzna: " << station.getLongitude() << std::endl;
+        std::cout << "ID: " << station.getId() << ", Name: " << station.getName()
+                  << ", City: " << station.getCity() << ", Latitude: " 
+                  << station.getLatitude() << ", Longitude: " << station.getLongitude() << std::endl;
     }
 
+    // Teraz chcemy wyświetlić szczegóły jednej stacji (np. stacja o ID 1001)
+    std::string stationId = "550";  // Zmienna stacji, którą chcemy wyświetlić
+    ApiClient apiClient;
+    try {
+        nlohmann::json measurements = apiClient.getMeasurements(stationId);
+        
+        std::cout << "\nSzczegóły dla stacji o ID " << stationId << ":" << std::endl;
+        std::cout << "Pomiary stacji: " << measurements.dump(4) << std::endl;  // Wypisuje dane w formie JSON
 
-    // Zatrzymanie programu przed zamknięciem
-    std::cout << "Naciśnij Enter, aby zakończyć program..." << std::endl;
-    std::cin.get();  // Czeka na naciśnięcie klawisza Enter przed zamknięciem
+    } catch (const std::exception& e) {
+        std::cerr << "Błąd podczas pobierania pomiarów: " << e.what() << std::endl;
+    }
 
     return 0;
 }
-

@@ -1,8 +1,15 @@
 #include "StationManager.h"
+#include "ApiClient.h" // Zakładając, że masz klasę ApiClient odpowiedzialną za pobieranie danych z API
 #include <iostream>
 #include <nlohmann/json.hpp>
 
-void loadStations(std::vector<Station>& stations, const std::string& cityFilter) {
+const double M_PI = 3.1415;
+
+// Konstruktor
+StationManager::StationManager() {}
+
+// Funkcja ładująca stacje z API
+void StationManager::loadStations(std::vector<Station>& stations, const std::string& cityFilter) {
     ApiClient apiClient;
 
     try {
@@ -53,4 +60,56 @@ void loadStations(std::vector<Station>& stations, const std::string& cityFilter)
     } catch (const std::exception& e) {
         std::cerr << "Błąd podczas pobierania danych: " << e.what() << std::endl;
     }
+}
+
+// Funkcja zwracająca wszystkie stacje
+std::vector<Station> StationManager::getAllStations() {
+    return stations;
+}
+
+// Funkcja zwracająca stacje w danym mieście
+std::vector<Station> StationManager::getStationsByCity(const std::string& city) {
+    std::vector<Station> filteredStations;
+    for (const auto& station : stations) {
+        if (station.getCity() == city) {
+            filteredStations.push_back(station);
+        }
+    }
+    return filteredStations;
+}
+
+// Funkcja zwracająca stacje w promieniu od danej lokalizacji
+std::vector<Station> StationManager::getStationsInRadius(double lat, double lon, double radius_km) {
+    std::vector<Station> filteredStations;
+    for (const auto& station : stations) {
+        double distance = calculateDistance(lat, lon, station.getLatitude(), station.getLongitude());
+        if (distance <= radius_km) {
+            filteredStations.push_back(station);
+        }
+    }
+    return filteredStations;
+}
+
+// Funkcja pomocnicza do obliczania odległości między dwoma punktami (lat, lon)
+double StationManager::calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    const double earthRadius = 6371.0; // Promień Ziemi w kilometrach
+
+    // Obliczanie różnic w radianach
+    double lat1Rad = lat1 * M_PI / 180.0;
+    double lon1Rad = lon1 * M_PI / 180.0;
+    double lat2Rad = lat2 * M_PI / 180.0;
+    double lon2Rad = lon2 * M_PI / 180.0;
+
+    // Obliczanie różnicy między współrzędnymi
+    double deltaLat = lat2Rad - lat1Rad;
+    double deltaLon = lon2Rad - lon1Rad;
+
+    // Obliczanie odległości Haversine'a
+    double a = std::sin(deltaLat / 2) * std::sin(deltaLat / 2) +
+               std::cos(lat1Rad) * std::cos(lat2Rad) *
+               std::sin(deltaLon / 2) * std::sin(deltaLon / 2);
+    double c = 2 * std::atan2(std::sqrt(a), std::sqrt(1 - a));
+
+    // Odległość w kilometrach
+    return earthRadius * c;
 }
