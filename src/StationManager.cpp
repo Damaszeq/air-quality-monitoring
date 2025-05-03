@@ -9,9 +9,9 @@ const double M_PI = 3.1415;
 StationManager::StationManager() {}
 
 // Funkcja ładująca stacje z API
-void StationManager::loadStations(std::vector<Station>& stations, const std::string& cityFilter) {
+void StationManager::loadStations( const std::string& cityFilter) {
     ApiClient apiClient;
-
+    stations.clear();
     try {
         // Pobranie stacji z API
         std::vector<nlohmann::json> stationsJson = apiClient.getStations();
@@ -67,49 +67,33 @@ std::vector<Station> StationManager::getAllStations() {
     return stations;
 }
 
-// Funkcja zwracająca stacje w danym mieście
-std::vector<Station> StationManager::getStationsByCity(const std::string& city) {
-    std::vector<Station> filteredStations;
-    for (const auto& station : stations) {
-        if (station.getCity() == city) {
-            filteredStations.push_back(station);
-        }
-    }
-    return filteredStations;
+// Funkcja pomocnicza do obliczenia odległości Haversine
+ double haversine(double lat1, double lon1, double lat2, double lon2) {
+    constexpr double R = 6371.0; // promień Ziemi w kilometrach
+
+    double latRad1 = lat1 * M_PI / 180.0;
+    double latRad2 = lat2 * M_PI / 180.0;
+    double deltaLat = (lat2 - lat1) * M_PI / 180.0;
+    double deltaLon = (lon2 - lon1) * M_PI / 180.0;
+
+    double a = sin(deltaLat / 2) * sin(deltaLat / 2) +
+               cos(latRad1) * cos(latRad2) *
+               sin(deltaLon / 2) * sin(deltaLon / 2);
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+
+    return R * c;
 }
 
 // Funkcja zwracająca stacje w promieniu od danej lokalizacji
-std::vector<Station> StationManager::getStationsInRadius(double lat, double lon, double radius_km) {
-    std::vector<Station> filteredStations;
+std::vector<Station> StationManager::getStationsWithinRadius(double latitude, double longitude, double radiusKm) const {
+    std::vector<Station> nearbyStations;
     for (const auto& station : stations) {
-        double distance = calculateDistance(lat, lon, station.getLatitude(), station.getLongitude());
-        if (distance <= radius_km) {
-            filteredStations.push_back(station);
+        double distance = haversine(latitude, longitude, station.getLatitude(), station.getLongitude());
+        if (distance <= radiusKm) {
+            nearbyStations.push_back(station);
         }
     }
-    return filteredStations;
+    return nearbyStations;
 }
 
-// Funkcja pomocnicza do obliczania odległości między dwoma punktami (lat, lon)
-double StationManager::calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-    const double earthRadius = 6371.0; // Promień Ziemi w kilometrach
 
-    // Obliczanie różnic w radianach
-    double lat1Rad = lat1 * M_PI / 180.0;
-    double lon1Rad = lon1 * M_PI / 180.0;
-    double lat2Rad = lat2 * M_PI / 180.0;
-    double lon2Rad = lon2 * M_PI / 180.0;
-
-    // Obliczanie różnicy między współrzędnymi
-    double deltaLat = lat2Rad - lat1Rad;
-    double deltaLon = lon2Rad - lon1Rad;
-
-    // Obliczanie odległości Haversine'a
-    double a = std::sin(deltaLat / 2) * std::sin(deltaLat / 2) +
-               std::cos(lat1Rad) * std::cos(lat2Rad) *
-               std::sin(deltaLon / 2) * std::sin(deltaLon / 2);
-    double c = 2 * std::atan2(std::sqrt(a), std::sqrt(1 - a));
-
-    // Odległość w kilometrach
-    return earthRadius * c;
-}
