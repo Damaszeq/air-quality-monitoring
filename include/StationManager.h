@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include "Sensor.h"
 #include "Station.h" // Zakładając, że klasa Station jest zdefiniowana w tym pliku
 
 class StationManager {
@@ -25,6 +26,9 @@ public:
     // Funkcja ładująca stacje, pozostaje bez zmian
     void loadStations(const std::string& cityFilter = "");
     
+    // Funkcja zwracajaca wektor sensorow dla danej stacji
+    std::vector<Sensor> getSensorsForStation(int stationId);
+
     // Funkcja pomocnicza do obliczania odległości między dwoma punktami (lat, lon)
     double calculateDistance(double lat1, double lon1, double lat2, double lon2);
 };

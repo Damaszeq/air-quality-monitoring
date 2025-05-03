@@ -67,6 +67,29 @@ std::vector<Station> StationManager::getAllStations() {
     return stations;
 }
 
+std::vector<Sensor> StationManager::getSensorsForStation(int stationId) {
+    std::vector<Sensor> sensors;
+    ApiClient apiClient;
+    sensors.clear();
+    // Pobierz dane JSON o sensorach z API
+    auto jsonSensors = apiClient.getSensors(stationId);
+
+    for (const auto& jsonSensor : jsonSensors) {
+        int id = jsonSensor.at("id").get<int>();
+        int stationId = jsonSensor.at("stationId").get<int>();
+
+        std::string paramName = jsonSensor.at("param").at("paramName").get<std::string>();
+        std::string paramFormula = jsonSensor.at("param").at("paramFormula").get<std::string>();
+        std::string paramCode = jsonSensor.at("param").at("paramCode").get<std::string>();
+        int paramId = jsonSensor.at("param").at("idParam").get<int>();
+
+        Sensor sensor(id, stationId, paramName, paramFormula, paramCode, paramId);
+        sensors.push_back(sensor);
+    }
+
+    return sensors;
+}
+
 // Funkcja pomocnicza do obliczenia odległości Haversine
  double haversine(double lat1, double lon1, double lat2, double lon2) {
     constexpr double R = 6371.0; // promień Ziemi w kilometrach

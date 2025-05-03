@@ -15,8 +15,8 @@ public:
     // Funkcja do pobierania danych o stacjach
     std::vector<nlohmann::json> getStations();
 
-    // Funkcja do pobierania danych o pomiarach
-    nlohmann::json getMeasurements(const std::string& stationId);
+    // Funkcja do pobierania danych o sensorach danej stacji
+     std::vector<nlohmann::json> getSensors(int stationId);
 
 private:
     std::string base_url;

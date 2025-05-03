@@ -50,6 +50,31 @@ void UiHelper::displayStations(const std::vector<Station>& stations, const std::
     }
 }
 
+void UiHelper::displaySensors(const std::vector<Sensor>& sensors) {
+    if (sensors.empty()) {
+        std::cout << "Brak sensorów dla tej stacji.\n";
+        return;
+    }
+
+    std::cout << "Dostępne sensory dla wybranej stacji:\n";
+    std::cout << "-------------------------------------\n";
+
+    for (const auto& sensor : sensors) {
+        std::cout << "ID sensora: " << sensor.getId() << "\n";
+        std::cout << "Parametr:   " << sensor.getParamName() << "\n";
+        std::cout << "Wzór:       " << sensor.getParamFormula() << "\n";
+        std::cout << "Kod:        " << sensor.getParamCode() << "\n";
+        std::cout << "-------------------------------------\n";
+    }
+}
+
+int UiHelper::askStationId() {
+    int stationId;
+    std::cout << "Podaj ID stacji pomiarowej: ";
+    std::cin >> stationId;
+    return stationId;
+}
+
 void UiHelper::askLocationAndRadius(double &latitude, double &longitude, double &radiusKm) {
     std::cout << "Podaj szerokość geograficzną: ";
     std::cin >> latitude;

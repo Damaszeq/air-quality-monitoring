@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include "Station.h"
+#include "Sensor.h"
 
 class UiHelper {
 public:
@@ -20,6 +21,9 @@ public:
     /// Znajduje i wyświetla najbliższą stację spośród wektora.
     static void displayNearestStation(const std::vector<Station>& stations,
                                       double latitude, double longitude);
+    static void displaySensors(const std::vector<Sensor>& sensors);
+
+    static int askStationId();
 };
 
 #endif // UIHELPER_H

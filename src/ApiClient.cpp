@@ -58,17 +58,14 @@ std::string ApiClient::makeRequest(const std::string& url) {
     return readBuffer;
 }
 
-
-
 std::vector<nlohmann::json> ApiClient::getStations() {
     std::string url = "https://api.gios.gov.pl/pjp-api/rest/station/findAll";
     std::string response = makeRequest(url);
     return nlohmann::json::parse(response);
 }
 
-
-nlohmann::json ApiClient::getMeasurements(const std::string& stationId) {
-    std::string url = base_url + "/measurement/" + stationId;
+std::vector<nlohmann::json> ApiClient::getSensors(int stationId) {
+    std::string url = base_url + "/station/sensors/" + std::to_string(stationId);
     std::string response = makeRequest(url);
     return nlohmann::json::parse(response);
 }
