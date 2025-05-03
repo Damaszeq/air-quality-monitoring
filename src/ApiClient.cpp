@@ -69,3 +69,27 @@ std::vector<nlohmann::json> ApiClient::getSensors(int stationId) {
     std::string response = makeRequest(url);
     return nlohmann::json::parse(response);
 }
+
+std::vector<Measurement> ApiClient::getMeasurements(int sensorId) {
+    std::string url = "https://api.gios.gov.pl/pjp-api/rest/data/getData/" + std::to_string(sensorId);
+    std::string response = makeRequest(url);
+
+    nlohmann::json jsonResponse = nlohmann::json::parse(response);
+
+    // Sprawdzanie, czy "values" istnieje i czy nie jest puste
+    if (jsonResponse.find("values") != jsonResponse.end() && !jsonResponse["values"].empty()) {
+        std::vector<Measurement> measurements;
+        
+        for (const auto& value : jsonResponse["values"]) {
+            if (value.contains("value") && !value["value"].is_null()) {
+                // Dodanie pomiaru tylko wtedy, gdy wartość jest poprawna
+                measurements.push_back(Measurement(value["date"], value["value"]));
+            }
+        }
+        
+        return measurements;
+    } else {
+        std::cerr << "Brak danych pomiarowych dla sensora: " << sensorId << std::endl;
+        return {};  // Zwrócenie pustego wektora, gdy brak danych
+    }
+}

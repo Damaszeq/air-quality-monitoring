@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <Measurement.h>
 #include <nlohmann/json.hpp>
 
 // Klasa reprezentująca klienta API
@@ -12,12 +13,16 @@ public:
     ApiClient();
     ~ApiClient();
 
+    friend class Measurement;
+
     // Funkcja do pobierania danych o stacjach
     std::vector<nlohmann::json> getStations();
 
     // Funkcja do pobierania danych o sensorach danej stacji
      std::vector<nlohmann::json> getSensors(int stationId);
 
+    // Funkcja do pobierania danych sensora
+     std::vector<Measurement> getMeasurements(int sensorId);
 private:
     std::string base_url;
     std::string makeRequest(const std::string& url);

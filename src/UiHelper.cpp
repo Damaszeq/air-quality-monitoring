@@ -68,11 +68,28 @@ void UiHelper::displaySensors(const std::vector<Sensor>& sensors) {
     }
 }
 
+void UiHelper::displaySensorData(const std::vector<Measurement>& measurements) {
+    if (measurements.empty()) {
+        std::cout << "Brak dostępnych danych pomiarowych." << std::endl;
+        return;
+    }
+
+    for (const auto& measurement : measurements) {
+        std::cout << "Data: " << measurement.date << ", Wartość: " << measurement.value << std::endl;
+    }
+}
 int UiHelper::askStationId() {
     int stationId;
     std::cout << "Podaj ID stacji pomiarowej: ";
     std::cin >> stationId;
     return stationId;
+}
+
+int UiHelper::askSensorId() {
+    int sensorId;
+    std::cout << "Podaj ID sensora: ";
+    std::cin >> sensorId;
+    return sensorId;
 }
 
 void UiHelper::askLocationAndRadius(double &latitude, double &longitude, double &radiusKm) {

@@ -18,5 +18,15 @@ int main() {
     int stationId = UiHelper::askStationId();  // Zapytanie o ID stacji
     std::vector<Sensor> sensors = manager.getSensorsForStation(stationId);  // Pobranie sensorów
     UiHelper::displaySensors(sensors);  // Wyświetlenie sensorów
+
+    int sensorId = UiHelper::askSensorId();  // Funkcja do zapytania o ID sensora
+
+    // Pobranie danych pomiarowych dla wybranego sensora
+    ApiClient apiClient;
+    std::vector<Measurement> measurements = apiClient.getMeasurements(sensorId);
+
+    // Wyświetlenie danych pomiarowych
+    UiHelper::displaySensorData(measurements);
+    
     return 0;
 }
