@@ -93,3 +93,40 @@ std::vector<Measurement> ApiClient::getMeasurements(int sensorId) {
         return {};  // Zwrócenie pustego wektora, gdy brak danych
     }
 }
+
+AirQualityIndex ApiClient::getAirQualityIndex(int stationId) {
+    std::string url = base_url + "/aqindex/getIndex/" + std::to_string(stationId);
+    std::string response = makeRequest(url);
+    auto json = nlohmann::json::parse(response);
+
+    auto parseIndexLevel = [](const nlohmann::json& obj) -> std::pair<int, std::string> {
+        if (!obj.is_null() && obj.contains("id") && obj.contains("indexLevelName")) {
+            return std::make_pair(obj["id"].get<int>(), obj["indexLevelName"].get<std::string>());
+        }
+        // Brak danych — zwracamy id = -1 i pusty string
+        return std::make_pair(-1, "");
+    };
+
+    std::pair<int, std::string> stIndexLevel   = json.contains("stIndexLevel")   ? parseIndexLevel(json["stIndexLevel"])   : std::make_pair(-1, "");
+    std::pair<int, std::string> so2IndexLevel  = json.contains("so2IndexLevel")  ? parseIndexLevel(json["so2IndexLevel"])  : std::make_pair(-1, "");
+    std::pair<int, std::string> no2IndexLevel  = json.contains("no2IndexLevel")  ? parseIndexLevel(json["no2IndexLevel"])  : std::make_pair(-1, "");
+    std::pair<int, std::string> pm10IndexLevel = json.contains("pm10IndexLevel") ? parseIndexLevel(json["pm10IndexLevel"]) : std::make_pair(-1, "");
+    std::pair<int, std::string> pm25IndexLevel = json.contains("pm25IndexLevel") ? parseIndexLevel(json["pm25IndexLevel"]) : std::make_pair(-1, "");
+    std::pair<int, std::string> o3IndexLevel   = json.contains("o3IndexLevel")   ? parseIndexLevel(json["o3IndexLevel"])   : std::make_pair(-1, "");
+
+    std::string calcDate = "";
+    if (json.contains("stCalcDate") && !json["stCalcDate"].is_null()) {
+        calcDate = json["stCalcDate"].get<std::string>();
+    }
+
+    return AirQualityIndex(
+        json["id"].get<int>(),
+        calcDate,
+        stIndexLevel.first, stIndexLevel.second,
+        so2IndexLevel.first, so2IndexLevel.second,
+        no2IndexLevel.first, no2IndexLevel.second,
+        pm10IndexLevel.first, pm10IndexLevel.second,
+        pm25IndexLevel.first, pm25IndexLevel.second,
+        o3IndexLevel.first, o3IndexLevel.second
+    );
+}

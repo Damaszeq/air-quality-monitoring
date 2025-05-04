@@ -1,6 +1,7 @@
 // src/UiHelper.cpp
 #include "UiHelper.h"
 #include <iostream>
+#include <algorithm>
 #include <cmath>
 #include <limits>
 const double M_PI = 3.14;
@@ -24,9 +25,8 @@ static double haversine(double lat1, double lon1, double lat2, double lon2) {
 // ————— Definicje metod UiHelper —————
 
 std::string UiHelper::askCity() {
-    std::cout << "Podaj nazwę miasta (lub zostaw puste, aby wyświetlić wszystkie stacje): ";
     std::string city;
-    // Użycie getline, aby obsłużyć również puste wejście
+    std::cout << "Podaj nazwę miejscowości: ";
     std::getline(std::cin, city);
     return city;
 }
@@ -50,23 +50,21 @@ void UiHelper::displayStations(const std::vector<Station>& stations, const std::
     }
 }
 
-void UiHelper::displaySensors(const std::vector<Sensor>& sensors) {
-    if (sensors.empty()) {
-        std::cout << "Brak sensorów dla tej stacji.\n";
-        return;
-    }
-
-    std::cout << "Dostępne sensory dla wybranej stacji:\n";
+void UiHelper::displaySensors(const std::vector<Sensor>& sensors, const Station& station) {
+    // Zamiast standardowego tekstu wyświetl adres stacji
+    std::cout << "Sensory dla stacji: " << station.getName() << std::endl;
     std::cout << "-------------------------------------\n";
 
     for (const auto& sensor : sensors) {
-        std::cout << "ID sensora: " << sensor.getId() << "\n";
-        std::cout << "Parametr:   " << sensor.getParamName() << "\n";
-        std::cout << "Wzór:       " << sensor.getParamFormula() << "\n";
-        std::cout << "Kod:        " << sensor.getParamCode() << "\n";
+        std::cout << "ID sensora: " << sensor.getId() << std::endl;
+        std::cout << "Parametr:   " << sensor.getParamName() << std::endl;  // Wywołanie getParamName() zamiast getParameter()
+        std::cout << "Wzór:       " << sensor.getParamFormula() << std::endl;  // Wywołanie getParamFormula() zamiast getFormula()
+        std::cout << "Kod:        " << sensor.getParamCode() << std::endl;     // Wywołanie getParamCode() zamiast getCode()
         std::cout << "-------------------------------------\n";
     }
 }
+
+
 
 void UiHelper::displaySensorData(const std::vector<Measurement>& measurements) {
     if (measurements.empty()) {
@@ -77,12 +75,6 @@ void UiHelper::displaySensorData(const std::vector<Measurement>& measurements) {
     for (const auto& measurement : measurements) {
         std::cout << "Data: " << measurement.date << ", Wartość: " << measurement.value << std::endl;
     }
-}
-int UiHelper::askStationId() {
-    int stationId;
-    std::cout << "Podaj ID stacji pomiarowej: ";
-    std::cin >> stationId;
-    return stationId;
 }
 
 int UiHelper::askSensorId() {
@@ -131,3 +123,156 @@ void UiHelper::displayNearestStation(const std::vector<Station>& stations,
                   << "\n";
     }
 }
+
+const Station* UiHelper::selectStationById(const std::vector<Station>& stations) {
+    int id = askStationId();
+
+    for (const auto& s : stations) {
+        if (s.getId() == id) {
+            return &s;
+        }
+    }
+
+    std::cout << "Stacja o podanym ID nie istnieje na liście. Spróbuj ponownie.\n";
+    return nullptr;
+}
+
+int UiHelper::askStationId() {
+    std::cout << "Podaj ID stacji: ";
+    int id;
+    std::cin >> id;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // Wyczyść bufor
+    return id;
+}
+
+
+
+const Sensor* UiHelper::selectSensorById(const std::vector<Sensor>& sensors, const Station& station) {
+    while (true) {
+        std::cout << "Podaj ID sensora: ";
+        int id;
+        std::cin >> id;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+        auto it = std::find_if(sensors.begin(), sensors.end(),
+                               [id](const Sensor& s) { return s.getId() == id; });
+
+        if (it != sensors.end()) {
+            return &(*it);
+        } else {
+            std::cout << "Sensor o podanym ID nie istnieje na liście. Spróbuj ponownie.\n";
+            // NIE wywołujemy ponownie displaySensors tutaj!
+        }
+    }
+}
+
+
+
+bool UiHelper::confirmAction(const std::string& message) {
+    std::cout << message << " (y/n): ";
+    char response;
+    std::cin >> response;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    return (response == 'y' || response == 'Y');
+}
+
+void UiHelper::displayAirQualityIndex(const AirQualityIndex& airQualityIndex) {
+    std::cout << "Indeks jakości powietrza dla stacji: " << airQualityIndex.getStationId() << std::endl;
+    std::cout << "Data obliczenia: " << airQualityIndex.getCalcDate() << std::endl;
+
+    bool hasData = false; // Flaga do sprawdzenia, czy mamy jakiekolwiek dane do wyświetlenia
+
+    // St Index
+    if (airQualityIndex.getStIndexId() != -1) {
+        std::cout << "Indeks St: " << airQualityIndex.getStIndexName() 
+                  << std::endl;
+        hasData = true;
+    }
+
+    // SO2 Index
+    if (airQualityIndex.getSo2IndexId() != -1) {
+        std::cout << "Indeks SO2: " << airQualityIndex.getSo2IndexName() 
+                  << std::endl;
+        hasData = true;
+    }
+
+    // NO2 Index
+    if (airQualityIndex.getNo2IndexId() != -1) {
+        std::cout << "Indeks NO2: " << airQualityIndex.getNo2IndexName() 
+                  << std::endl;
+        hasData = true;
+    }
+
+    // PM10 Index
+    if (airQualityIndex.getPm10IndexId() != -1) {
+        std::cout << "Indeks PM10: " << airQualityIndex.getPm10IndexName() 
+                  << std::endl;
+        hasData = true;
+    }
+
+    // PM2.5 Index
+    if (airQualityIndex.getPm25IndexId() != -1) {
+        std::cout << "Indeks PM2.5: " << airQualityIndex.getPm25IndexName() 
+                  << std::endl;
+        hasData = true;
+    }
+
+    // O3 Index
+    if (airQualityIndex.getO3IndexId() != -1) {
+        std::cout << "Indeks O3: " << airQualityIndex.getO3IndexName() 
+                  << std::endl;
+        hasData = true;
+    }
+
+    // Jeśli nie ma żadnych danych, wyświetl komunikat "Brak danych"
+    if (!hasData) {
+        std::cout << "Brak danych o jakości powietrza.\n";
+    }
+}
+
+
+int UiHelper::askStationId(const std::vector<Station>& stations, const std::string& city) {
+    int stationId;
+    bool validId = false;
+
+    while (!validId) {
+        std::cout << "Podaj ID stacji: ";
+        std::cin >> stationId;
+
+        bool foundValidStation = false;
+        for (const auto& station : stations) {
+            if (station.getId() == stationId) {
+                if (station.getCity() == city) {
+                    foundValidStation = true;
+                    validId = true;
+                    break;
+                } else {
+                    std::cout << "To ID stacji należy do innej miejscowości: " << station.getCity() << ".\n";
+                    std::cout << "Czy chcesz wybrać inną miejscowość? (t/n): ";
+                    char choice;
+                    std::cin >> choice;
+                    if (choice == 't' || choice == 'T') {
+                        return -1;  // użytkownik chce zmienić miasto
+                    } else {
+                        validId = false;
+                    }
+                    break;
+                }
+            }
+        }
+
+        if (!foundValidStation) {
+            std::cout << "Stacja o podanym ID nie istnieje w tej miejscowości. Spróbuj ponownie.\n";
+        }
+    }
+
+    return stationId;
+}
+
+bool UiHelper::askSaveToDatabase() {
+    std::cout << "Czy chcesz zapisać dane do lokalnej bazy danych? (T/N): ";
+    std::string choice;
+    std::getline(std::cin, choice);
+    return (choice == "T" || choice == "t");
+}
+
