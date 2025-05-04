@@ -5,8 +5,8 @@
 
 class AirQualityIndex {
 private:
-    int stationId;
-    std::string calcDate;
+    int stationId;       // ID stacji
+    std::string calcDate; // Data obliczeń
 
     int stIndexId;
     std::string stIndexName;
@@ -27,6 +27,7 @@ private:
     std::string o3IndexName;
 
 public:
+    // Konstruktor
     AirQualityIndex(int stationId,
                     const std::string& calcDate,
                     int stIndexId, const std::string& stIndexName,
@@ -36,6 +37,7 @@ public:
                     int pm25IndexId, const std::string& pm25IndexName,
                     int o3IndexId, const std::string& o3IndexName);
 
+    // Gettery
     int getStationId() const;
     std::string getCalcDate() const;
 
@@ -56,6 +58,14 @@ public:
 
     int getO3IndexId() const;
     std::string getO3IndexName() const;
+
+    // Metody pomocnicze do pobrania wartości wskaźników jakości powietrza
+    std::string getStIndex() const;
+    std::string getSo2Index() const;
+    std::string getNo2Index() const;
+    std::string getPm10Index() const;
+    std::string getPm25Index() const;
+    std::string getO3Index() const;
 };
 
 #endif // AIR_QUALITY_INDEX_H
