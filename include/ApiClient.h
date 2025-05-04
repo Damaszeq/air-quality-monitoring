@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <Measurement.h>
+#include <AirQualityIndex.h>
 #include <nlohmann/json.hpp>
 
 // Klasa reprezentująca klienta API
@@ -20,6 +21,8 @@ public:
 
     // Funkcja do pobierania danych o sensorach danej stacji
      std::vector<nlohmann::json> getSensors(int stationId);
+
+     AirQualityIndex getAirQualityIndex(int stationId);
 
     // Funkcja do pobierania danych sensora
      std::vector<Measurement> getMeasurements(int sensorId);
