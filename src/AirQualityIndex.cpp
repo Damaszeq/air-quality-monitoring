@@ -1,5 +1,6 @@
 #include "AirQualityIndex.h"
 
+// Konstruktor klasy AirQualityIndex
 AirQualityIndex::AirQualityIndex(int stationId,
                                  const std::string& calcDate,
                                  int stIndexId, const std::string& stIndexName,
@@ -8,17 +9,15 @@ AirQualityIndex::AirQualityIndex(int stationId,
                                  int pm10IndexId, const std::string& pm10IndexName,
                                  int pm25IndexId, const std::string& pm25IndexName,
                                  int o3IndexId, const std::string& o3IndexName)
-    : stationId(stationId),
-      calcDate(calcDate),
+    : stationId(stationId), calcDate(calcDate),
       stIndexId(stIndexId), stIndexName(stIndexName),
       so2IndexId(so2IndexId), so2IndexName(so2IndexName),
       no2IndexId(no2IndexId), no2IndexName(no2IndexName),
       pm10IndexId(pm10IndexId), pm10IndexName(pm10IndexName),
       pm25IndexId(pm25IndexId), pm25IndexName(pm25IndexName),
-      o3IndexId(o3IndexId), o3IndexName(o3IndexName)
-{
-}
+      o3IndexId(o3IndexId), o3IndexName(o3IndexName) {}
 
+// Gettery
 int AirQualityIndex::getStationId() const {
     return stationId;
 }
@@ -73,4 +72,29 @@ int AirQualityIndex::getO3IndexId() const {
 
 std::string AirQualityIndex::getO3IndexName() const {
     return o3IndexName;
+}
+
+// Metody pomocnicze zwracające pełną wartość wskaźnika
+std::string AirQualityIndex::getStIndex() const {
+    return std::to_string(stIndexId) + " - " + stIndexName;
+}
+
+std::string AirQualityIndex::getSo2Index() const {
+    return std::to_string(so2IndexId) + " - " + so2IndexName;
+}
+
+std::string AirQualityIndex::getNo2Index() const {
+    return std::to_string(no2IndexId) + " - " + no2IndexName;
+}
+
+std::string AirQualityIndex::getPm10Index() const {
+    return std::to_string(pm10IndexId) + " - " + pm10IndexName;
+}
+
+std::string AirQualityIndex::getPm25Index() const {
+    return std::to_string(pm25IndexId) + " - " + pm25IndexName;
+}
+
+std::string AirQualityIndex::getO3Index() const {
+    return std::to_string(o3IndexId) + " - " + o3IndexName;
 }

@@ -73,7 +73,7 @@ void UiHelper::displaySensorData(const std::vector<Measurement>& measurements) {
     }
 
     for (const auto& measurement : measurements) {
-        std::cout << "Data: " << measurement.date << ", Wartość: " << measurement.value << std::endl;
+        std::cout << "Data: " << measurement.getDate() << ", Wartość: " << measurement.getValue() << std::endl;
     }
 }
 
